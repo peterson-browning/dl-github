@@ -4,18 +4,38 @@ repoName="$1"
 #repoName='peterson-browning/hello-world'
 
 echo Checking repository status...
-resCode=`curl -s -o /dev/null -w %{http_code} https://api.github.com/repos/$repoName/releases/latest`
+res=`curl -s -w %{http_code} https://api.github.com/repos/$repoName/releases/latest`
+resCode=${res: -3}
+res=${res:0:${#string}-3}
 
-if [ $resCode != "200" ]
+if [ $resCode = "404" ]
 then
 	#Change the color to red and print error message and exit
 	echo -e "\e[31m"
+	echo "HTTP Error Code: $resCode"
+	echo "$res"
 	echo "Repository not found (check spelling & try again)"
 	echo 
 	echo "Note repository should have the format <repo>/<project>"
 	echo "   e.g. peterson-browning/hello-world"
 	echo 
 	echo "Also ensure the repo is PUBLIC and actually has releases!"
+	exit 1
+elif [ $resCode = "403" ]
+then
+	#Change the color to red and print error message and exit
+	echo -e "\e[31m"
+	echo "HTTP Error Code: $resCode"
+	echo "$res"
+	echo "Forbidden -- Access Denied, or Rate Limit Exceeded"
+	exit 1
+elif [ $resCode != "200" ]
+then
+	#Change the color to red and print error message and exit
+	echo -e "\e[31m"
+	echo "HTTP Error Code: $resCode"
+	echo "$res"
+	echo "Unable to access repository..."
 	exit 1
 fi
 
