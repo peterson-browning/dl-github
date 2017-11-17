@@ -1,8 +1,26 @@
 #!/bin/bash
 
-repoName='peterson-browning/hello-world'
+repoName="$1"
+#repoName='peterson-browning/hello-world'
 
+echo Checking repository status...
+resCode=`curl -s -o /dev/null -w %{http_code} https://api.github.com/repos/$repoName/releases/latest`
 
+if [ $resCode != "200" ]
+then
+	#Change the color to red and print error message and exit
+	echo -e "\e[31m"
+	echo "Repository not found (check spelling & try again)"
+	echo 
+	echo "Note repository should have the format <repo>/<project>"
+	echo "   e.g. peterson-browning/hello-world"
+	echo 
+	echo "Also ensure the repo is PUBLIC and actually has releases!"
+	exit 1
+fi
+
+#Change color to Cyan and go
+echo -e "\e[36m"
 echo Getting latest release from repo: $repoName
 
 #Get the JSON output from the latest release which will have A TON of info, including the address of where we can download the latest release .zip file
