@@ -74,6 +74,14 @@ zipurl=$(getJSONvalue "$json" "$zipKey")
 zipName=${zipurl##*/}
 #e.g. V0.0.3.zip
 
+if [ "$zipName" = "" ]
+then
+	#Change the color to red and print error message and exit
+	echo -e "\e[31m"
+	echo "Nothing to download..."
+	exit 1
+fi
+
 #Actually download the .zip file and save it to $zipName
 echo Downloading: $zipName
 curl -s -X GET -L $zipurl -o $zipName

@@ -2,7 +2,7 @@
 
 repoName="$1"
 relName="$2"
-TOKEN="$4"
+TOKEN="$3"
 #e.g. repoName='peterson-browning/dl-github'
 #e.g. relName='V0.0.5'
 #e.g. TOKEN='GITHUB_TOKEN'
@@ -135,6 +135,7 @@ RES=$(curl -X POST -s -L -w "%{http_code}" -H "Authorization: token $TOKEN" -H "
 resCode=${RES: -3}
 resText=${RES:0:${#string}-3}
 if [ $resCode = "201" ]
+then
 	echo "Success!"
 elif [ $resCode != "201" ]
 then
