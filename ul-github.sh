@@ -9,7 +9,7 @@ TOKEN="$3"
 
 echo $repoName
 echo $relName
-echo $zipName
+
 ############################################################################
 # Helper Functions
 ############################################################################
@@ -115,23 +115,22 @@ fi
 
 #Peel off the upload url ($ulURL)
 tagKey='upload_url'
-echo $resText
 ulURL=$(getJSONvalue "$resText" "$tagKey")
-echo $ulURL
+#echo $ulURL
 
 #Remove the text after the "{"
-ulURL=$(echo $ulURL | cut -d "{" -f1)
+#ulURL=$(echo $ulURL | cut -d "{" -f1)
 
 
 #Zip the appropriate contents & grab the name
 zipName=`./zipGit.sh $relName`
 
 #Add the Name
-ulURL="$ulURL{?name=$zipName}"
+ulURL="$ulURL=$zipName"
 
 
 echo Uploading zip to: $ulURL
-RES=$(curl -X POST -s -L -w "%{http_code}" -H "Authorization: token $TOKEN" -H "Content-Type: application/zip" --data $zipName $ulURL)
+RES=$(curl -X POST -s -L -w "%{http_code}" -H "Authorization: token $TOKEN" -H "Content-Type: application/zip" --data-binary @"$zipName" $ulURL)
 resCode=${RES: -3}
 resText=${RES:0:${#string}-3}
 if [ $resCode = "201" ]
