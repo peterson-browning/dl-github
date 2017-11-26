@@ -1,6 +1,7 @@
 #!/bin/bash
 
 repoName="$1"
+relName="$2"
 #e.g. repoName='peterson-browning/dl-github'
 
 ############################################################################
@@ -57,19 +58,27 @@ fi
 
 #Change color to Cyan and go
 echo -e "\e[36m"
-echo Getting latest release from repo: $repoName
+if [ "$relName" = "" ]
+then
+	echo Getting latest release from repo: $repoName
 
-#Get the JSON output from the latest release which will have A TON of info, including the address of where we can download the latest release .zip file
-json=`curl -s https://api.github.com/repos/$repoName/releases/latest`
-#e.g See "latest.json" for an example or `echo $json`
-
+	#Get the JSON output from the latest release which will have A TON of info, including the address of where we can download the latest release .zip file
+	json=`curl -s https://api.github.com/repos/$repoName/releases/latest`
+	#e.g See "latest.json" for an example or `echo $json`
+else
+	echo Getting $relName release from repo: $repoName
+	#Get the JSON output from the latest release which will have A TON of info, including the address of where we can download the latest release .zip file
+	json=`curl -s https://api.github.com/repos/$repoName/releases/tags/$relName`
+	#e.g See "latest.json" for an example or `echo $json`
+fi
+	
 #The following JSON property is the "key" for where we will find the address of the .zip file 
 zipKey='browser_download_url'
 
 #Extract the value ($zipurl) using the "key" ($key) from the JSON ($json) info
 zipurl=$(getJSONvalue "$json" "$zipKey")
 #e.g. https://github.com/peterson-browning/hello-world/releases/download/V0.0.3/V0.0.3.zip
-
+	
 #Peel off the file name ($zipName) from the end of the $zipurl
 zipName=${zipurl##*/}
 #e.g. V0.0.3.zip
