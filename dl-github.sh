@@ -1,8 +1,9 @@
 #!/bin/bash
 
 repoName="$1"
-relName="$2"
+relName="$2"  #OPTIONAL
 #e.g. repoName='peterson-browning/dl-github'
+#e.g. relName='V0.0.11'
 
 ############################################################################
 # Helper Functions
@@ -19,9 +20,10 @@ getJSONvalue () {
 ############################################################################
 # MAIN Routine
 ############################################################################
+relAPI="https://api.github.com/repos/$repoName/releases"
 
 echo Checking repository status...
-res=`curl -s -w %{http_code} https://api.github.com/repos/$repoName/releases/latest`
+res=`curl -s -w %{http_code} $relAPI/latest`
 resCode=${res: -3}
 resText=${res:0:${#string}-3}
 
@@ -58,17 +60,17 @@ fi
 
 #Change color to Cyan and go
 echo -e "\e[36m"
-if [ "$relName" = "" ]
+if [ "$relName" = "" ] || [ "$relName" = "QUERY" ]
 then
 	echo Getting latest release from repo: $repoName
 
 	#Get the JSON output from the latest release which will have A TON of info, including the address of where we can download the latest release .zip file
-	json=`curl -s https://api.github.com/repos/$repoName/releases/latest`
+	json=`curl -s $relAPI/latest`
 	#e.g See "latest.json" for an example or `echo $json`
 else
 	echo Getting $relName release from repo: $repoName
 	#Get the JSON output from the latest release which will have A TON of info, including the address of where we can download the latest release .zip file
-	json=`curl -s https://api.github.com/repos/$repoName/releases/tags/$relName`
+	json=`curl -s $relAPI/tags/$relName`
 	#e.g See "latest.json" for an example or `echo $json`
 fi
 	
@@ -91,6 +93,12 @@ then
 	exit 1
 fi
 
+if [ "$relName" = "QUERY" ]
+then
+	echo Latest Release: $(getJSONvalue "$json" "tag_name")
+	exit 0
+fi
+	
 #Actually download the .zip file and save it to $zipName
 echo Downloading: $zipName
 curl -s -X GET -L $zipurl -o $zipName
