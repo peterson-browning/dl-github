@@ -5,10 +5,26 @@ relName="$2"
 TOKEN="$3"
 #e.g. repoName='peterson-browning/dl-github'
 #e.g. relName='V0.0.5'
-#e.g. TOKEN='GITHUB_TOKEN'
+#e.g. TOKEN='$GITHUB_TOKEN'
 
-echo $repoName
-echo $relName
+
+############################################################################
+# Check Inputs
+############################################################################
+
+if [ "$repoName" = "" ] || [ "$relName" = "" ] || [ "$TOKEN" = "" ]
+then
+	#Change the color to yellow and print error message and exit
+	echo -e "\e[33m"
+	echo ERROR using ul-github.sh 
+	echo 
+	echo Inputs:
+	echo [\$repoName] [\$relName] [\$TOKEN]
+	echo
+	echo Example:
+	echo ./ul-github.sh peterson-browning/dl-github V0.0.13 \$GITHUB_TOKEN
+	exit 1
+fi
 
 ############################################################################
 # Helper Functions
@@ -76,7 +92,7 @@ repoURL="https://api.github.com/repos/$repoName/releases"
 
 
 #Use the API to POST the new release metadata
-echo Creating next release for repo: $repoName
+echo Creating $relName release for repo: $repoName
 #curl -s -d $json -H "Content-Type: application/json" -X POST -L $repoURL
 RES=$(curl -X POST -s -L -w "%{http_code}" -H "Authorization: token $TOKEN" -H "Content-Type: application/json" --data-ascii "$json"  $repoURL)
 #e.g. Downloading: https://github.com/peterson-browning/hello-world/releases/download/V0.0.3/V0.0.3.zip

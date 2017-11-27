@@ -6,6 +6,27 @@ relName="$2"  #OPTIONAL
 #e.g. relName='V0.0.11'
 
 ############################################################################
+# Check Inputs
+############################################################################
+
+if [ "$repoName" = "" ]
+then
+	#Change the color to yellow and print error message and exit
+	echo -e "\e[33m"
+	echo ERROR using dl-github.sh 
+	echo 
+	echo Inputs:
+	echo [\$repoName] \<\$relName\>
+	echo
+	echo Examples:
+	echo "./dl-github.sh peterson-browning/dl-github          #Download the LATEST release"
+	echo "./dl-github.sh peterson-browning/dl-github V0.0.1   #Download the V0.0.1 release"
+	echo "./dl-github.sh peterson-browning/dl-github QUERY    #Query the name of the LATEST release"
+	exit 1
+fi
+
+
+############################################################################
 # Helper Functions
 ############################################################################
 
